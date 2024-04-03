@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/custom ui/Loader";
+import { CollectionType } from "@/components/collections/type";
 
 const Collections = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [collections, setCollections] = useState<any>([]);
+  const [collections, setCollections] = useState<CollectionType[]>([]);
 
   const getCollections = async () => {
     try {
@@ -31,7 +33,9 @@ const Collections = () => {
 
   console.log(collections);
 
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <div className="px-10">
       <div className="flex justify-between items-center py-2">
         <p className="text-heading2-bold">Collections</p>

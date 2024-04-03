@@ -11,7 +11,7 @@ const CollectionDetails = ({
 }: {
   params: { collectionId: string };
 }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [CollectionDetails, setCollectionDetails] =
     useState<CollectionType | null>(null);
 

@@ -23,7 +23,6 @@ const MultiSelect: React.FC<MultiTextProps> = ({
   const [isValue, setIsValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(value);
 
   let selected: CollectionType[];
 
@@ -45,8 +44,8 @@ const MultiSelect: React.FC<MultiTextProps> = ({
     <div className="overflow-visible bg-white">
       <div className="flex gap-1 flex-wrap border rounded-md">
         {selected.map((collection) => (
-          <Badge key={collection._id}>
-            {collection.title}
+          <Badge key={collection?._id}>
+            {collection?.title}
             <Button
               className="ml-1 hover:text-red-1"
               onClick={() => {
@@ -78,7 +77,7 @@ const MultiSelect: React.FC<MultiTextProps> = ({
                   onChange(collection._id);
                 }}
               >
-                <li className="hover:text-red-1 cursor-pointer">
+                <li className="hover:bg-gray-100 p-2 cursor-pointer">
                   {collection.title}
                 </li>
               </ul>

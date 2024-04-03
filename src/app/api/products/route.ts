@@ -1,14 +1,15 @@
+import Collection from "@/lib/models/Conllection";
 import Product from "@/lib/models/Products";
 import { connectDB } from "@/lib/mongoDB";
 import { auth } from "@clerk/nextjs";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export const POST = async (req: NextResponse) => {
+export const POST = async (req: NextRequest) => {
   try {
     const { userId } = auth();
 
     if (!userId) {
-      return new NextResponse("Unauthorized", { status: 400 });
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     await connectDB();
@@ -27,7 +28,9 @@ export const POST = async (req: NextResponse) => {
     } = await req.json();
 
     if (!title || !description || !media || !category || !price || !expense) {
-      return new NextResponse("Missing text", { status: 400 });
+      return new NextResponse("Not enough data to create a product", {
+        status: 400,
+      });
     }
 
     const newProduct = await Product.create({
@@ -45,10 +48,35 @@ export const POST = async (req: NextResponse) => {
 
     await newProduct.save();
 
-    return  NextResponse.json(newProduct, { status: 201 });
+    if (collections) {
+      for (const collectionId of collections) {
+        const collection = await Collection.findById(collectionId);
+        if (collection) {
+          collection.products.push(newProduct._id);
+          await collection.save();
+        }
+      }
+    }
 
-  } catch (error) {
-    console.log("[Products_POST]", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json(newProduct, { status: 200 });
+  } catch (err) {
+    console.log("[products_POST]", err);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 };
+
+export const GET = async (req: NextRequest) => {
+  try {
+    await connectDB();
+
+    const products = await Product.find()
+      .sort({ createdAt: "desc" })
+      .populate({ path: "collections", model: Collection });
+
+    return NextResponse.json(products, { status: 200 });
+  } catch (err) {
+    console.log("[products_GET]", err);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+};
+

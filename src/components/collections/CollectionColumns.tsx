@@ -3,12 +3,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CollectionType } from "./type";
 import { Delete } from "..";
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 
 const CollectionColumns: ColumnDef<CollectionType>[] = [
   {
     accessorKey: "title",
     header: "Title",
-    cell: ({ row }) => <Link href={`/collections/${row.original._id}`} className="hover:text-red-1">{row.original.title}</Link>,
   },
   {
     accessorKey: "products",
@@ -17,7 +17,17 @@ const CollectionColumns: ColumnDef<CollectionType>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <Delete id={row.original._id} />,
+    cell: ({ row }) => (
+      <div className="flex  gap-2 items-center justify-center">
+        <Delete item="collections" id={row.original._id} />
+        <Link
+          href={`/collections/${row.original._id}`}
+          className="bg-blue-1 py-3 px-4 text-white rounded-md"
+        >
+          <Pencil className="h-4 w-4"/>
+        </Link>
+      </div>
+    ),
   },
 ];
 

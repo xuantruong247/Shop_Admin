@@ -14,23 +14,26 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
+import Loader from "./Loader";
 
 interface Deleteprops {
+  item: string;
   id: string;
 }
-const Delete: React.FC<Deleteprops> = ({ id }) => {
+const Delete: React.FC<Deleteprops> = ({ item, id }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onDelete = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch(`/api/collections/${id}`, {
+      const itemType = item === "products" ? "products" : "collections";
+      const res = await fetch(`/api/${itemType}/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
         setIsLoading(false);
-        window.location.href = "/collections";
-        toast.success("Collections deleted successfully.");
+        window.location.href = `/${itemType}`;
+        toast.success(`${item} deleted successfully.`);
       }
     } catch (error) {
       console.log(error);
@@ -38,7 +41,9 @@ const Delete: React.FC<Deleteprops> = ({ id }) => {
     }
   };
 
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <AlertDialog>
       <AlertDialogTrigger>
         <Button className="bg-red-1 text-white">
@@ -51,16 +56,13 @@ const Delete: React.FC<Deleteprops> = ({ id }) => {
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            collection.
+            This action cannot be undone. This will permanently delete your{" "}
+            {item}.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            className="bg-red-1 text-white"
-            onClick={onDelete}
-          >
+          <AlertDialogAction className="bg-red-1 text-white" onClick={onDelete}>
             Continue
           </AlertDialogAction>
         </AlertDialogFooter>
